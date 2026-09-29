@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#020708">
+<title>ReplyDesk — AI draft replies for customer service</title>
+<meta name="description" content="ReplyDesk turns a customer message into a draft reply that follows your policies. A human reviews every draft. Demo with a fictional company.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="https://projects.fizzl.eu/">Reply<span>Desk</span></a>
+  <span class="pill"><i></i> DEMO · <b id="company">Northwind Daily</b> (fictional)</span>
+</header>
+
+<main>
+  <section class="intro">
+    <h1>From customer message<br><em>to a draft you can send.</em></h1>
+    <p>Paste an email, pick a case type if you like, and ReplyDesk drafts a reply that sticks to the company's policies. It tells you why it wrote it that way and what you still need to check. You stay in control: edit, then copy.</p>
+  </section>
+
+  <section class="desk">
+    <form id="form" class="panel">
+      <div class="panel-head"><span>01 / INCOMING</span><div id="samples" class="samples" aria-label="Example messages"></div></div>
+      <label for="message">Customer message</label>
+      <textarea id="message" rows="9" required placeholder="Paste the customer's email here…"></textarea>
+      <div class="row">
+        <div><label for="caseType">Case type</label><select id="caseType"><option value="">Detect automatically</option></select></div>
+        <div><label for="language">Reply in</label><select id="language"><option value="auto">Same as the message</option><option value="en">English</option><option value="nl">Dutch</option></select></div>
+      </div>
+      <label for="instruction">Direction for this reply <small>(optional)</small></label>
+      <input id="instruction" type="text" placeholder="e.g. confirm the cancellation per 1 October">
+      <button id="go" type="submit">Draft reply →</button>
+      <p class="fine">Demo limit: 10 drafts per hour. Don't paste real customer data.</p>
+    </form>
+
+    <section id="out" class="panel out" aria-live="polite">
+      <div class="panel-head"><span>02 / DRAFT</span><span id="case" class="case"></span></div>
+      <p id="empty" class="empty">The draft appears here.</p>
+      <p id="error" class="error" hidden></p>
+      <div id="result" hidden>
+        <label for="subject">Subject</label>
+        <input id="subject" type="text">
+        <label for="draft">Reply <small>(edit freely)</small></label>
+        <textarea id="draft" rows="14"></textarea>
+        <div class="actions"><button id="copy" type="button">Copy reply</button><span id="copied" class="fine" hidden>Copied.</span></div>
+        <div class="lists">
+          <div><h3>Why this draft</h3><ul id="notes"></ul></div>
+          <div><h3>Check before sending</h3><ul id="checks"></ul></div>
+        </div>
+      </div>
+    </section>
+  </section>
+</main>
+
+<footer>
+  <span>Built by <a href="https://fizzl.eu/">Frits · fizzl.eu</a> with Claude. Northwind Daily and its policies are made up for this demo.</span>
+  <a href="https://github.com/Fizzl13/replydesk">Source on GitHub ↗</a>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>

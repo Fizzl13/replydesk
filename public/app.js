@@ -1,8 +1,9 @@
 const $ = (id) => document.getElementById(id);
 let config = { caseTypes: [], samples: [] };
+let lastCase = null;
 
 function list(el, items) {
-  el.replaceChildren(...(items.length ? items : ["Nothing"]).map((t) => Object.assign(document.createElement("li"), { textContent: t })));
+  el.replaceChildren(...(items.length ? items : [t("nothing")]).map((text) => Object.assign(document.createElement("li"), { textContent: text })));
 }
 
 function show(state, message) {
@@ -12,42 +13,49 @@ function show(state, message) {
   if (state === "error") $("error").textContent = message;
 }
 
-async function load() {
-  config = await (await fetch("/api/config")).json();
-  $("company").textContent = config.company;
-  for (const c of config.caseTypes) $("caseType").append(new Option(c.label.en, c.id));
-  for (const s of config.samples) {
+const caseLabel = (id) => config.caseTypes.find((c) => c.id === id)?.label[lang] ?? id;
+
+// Case types and sample buttons follow the page language.
+function renderOptions() {
+  const select = $("caseType");
+  const chosen = select.value;
+  select.querySelectorAll("option:not([value=''])").forEach((o) => o.remove());
+  for (const c of config.caseTypes) select.append(new Option(c.label[lang], c.id));
+  select.value = chosen;
+  $("samples").replaceChildren(...config.samples.map((s) => {
     const b = Object.assign(document.createElement("button"), { type: "button", textContent: `${s.language.toUpperCase()} · ${s.id.replace("-", " ")}` });
     b.addEventListener("click", () => { $("message").value = s.text; $("message").focus(); });
-    $("samples").append(b);
-  }
+    return b;
+  }));
+  if (lastCase) $("case").textContent = `${caseLabel(lastCase.type)} · ${lastCase.language.toUpperCase()}`;
+  if (!$("go").disabled) $("go").textContent = t("draftButton");
 }
 
 $("form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const go = $("go");
   go.disabled = true;
-  go.textContent = "Drafting…";
+  go.textContent = t("drafting");
   try {
     const res = await fetch("/api/draft", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ message: $("message").value, caseType: $("caseType").value, language: $("language").value, instruction: $("instruction").value }),
     });
-    const data = await res.json().catch(() => ({ error: "Unexpected answer from the server." }));
-    if (!res.ok) return show("error", data.error || "Something went wrong.");
-    const label = config.caseTypes.find((c) => c.id === data.case_type)?.label.en ?? data.case_type;
-    $("case").textContent = `${label} · ${data.language.toUpperCase()}`;
+    const data = await res.json().catch(() => ({ error: t("unexpected") }));
+    if (!res.ok) return show("error", data.error || t("failed"));
+    lastCase = { type: data.case_type, language: data.language };
+    $("case").textContent = `${caseLabel(data.case_type)} · ${data.language.toUpperCase()}`;
     $("subject").value = data.subject;
     $("draft").value = data.draft;
     list($("notes"), data.notes);
     list($("checks"), data.check_before_sending);
     show("result");
   } catch {
-    show("error", "Could not reach ReplyDesk. Check your connection.");
+    show("error", t("offline"));
   } finally {
     go.disabled = false;
-    go.textContent = "Draft reply →";
+    go.textContent = t("draftButton");
   }
 });
 
@@ -57,4 +65,11 @@ $("copy").addEventListener("click", async () => {
   setTimeout(() => ($("copied").hidden = true), 1500);
 });
 
-load();
+document.addEventListener("langchange", renderOptions);
+applyLang();
+
+(async () => {
+  config = await (await fetch("/api/config")).json();
+  $("company").textContent = config.company;
+  renderOptions();
+})();

@@ -13,43 +13,46 @@
 <body>
 <header class="top">
   <a class="brand" href="https://projects.fizzl.eu/">Reply<span>Desk</span></a>
-  <span class="pill"><i></i> DEMO · <b id="company">Northwind Daily</b> (fictional)</span>
+  <div class="top-right">
+    <span class="pill"><i></i> <span data-i18n="demo">DEMO</span> · <b id="company">Northwind Daily</b> <span data-i18n="fictional">(fictional)</span></span>
+    <div class="lang-switch" role="group" aria-label="Language"><button type="button" data-lang="nl" aria-pressed="false">NL</button><button type="button" data-lang="en" aria-pressed="true">EN</button></div>
+  </div>
 </header>
 
 <main>
   <section class="intro">
-    <h1>From customer message<br><em>to a draft you can send.</em></h1>
-    <p>Paste an email, pick a case type if you like, and ReplyDesk drafts a reply that sticks to the company's policies. It tells you why it wrote it that way and what you still need to check. You stay in control: edit, then copy.</p>
+    <h1 data-i18n-html="h1">From customer message<br><em>to a draft you can send.</em></h1>
+    <p data-i18n="intro">Paste an email, pick a case type if you like, and ReplyDesk drafts a reply that sticks to the company's policies. It tells you why it wrote it that way and what you still need to check. You stay in control: edit, then copy.</p>
   </section>
 
   <section class="desk">
     <form id="form" class="panel">
-      <div class="panel-head"><span>01 / INCOMING</span><div id="samples" class="samples" aria-label="Example messages"></div></div>
-      <label for="message">Customer message</label>
-      <textarea id="message" rows="9" required placeholder="Paste the customer's email here…"></textarea>
+      <div class="panel-head"><span data-i18n="incoming">01 / INCOMING</span><div id="samples" class="samples" aria-label="Example messages"></div></div>
+      <label for="message" data-i18n="messageLabel">Customer message</label>
+      <textarea id="message" rows="9" required data-i18n-placeholder="messagePlaceholder" placeholder="Paste the customer's email here…"></textarea>
       <div class="row">
-        <div><label for="caseType">Case type</label><select id="caseType"><option value="">Detect automatically</option></select></div>
-        <div><label for="language">Reply in</label><select id="language"><option value="auto">Same as the message</option><option value="en">English</option><option value="nl">Dutch</option></select></div>
+        <div><label for="caseType" data-i18n="caseTypeLabel">Case type</label><select id="caseType"><option value="" data-i18n="detect">Detect automatically</option></select></div>
+        <div><label for="language" data-i18n="replyIn">Reply in</label><select id="language"><option value="auto" data-i18n="sameAsMessage">Same as the message</option><option value="en" data-i18n="english">English</option><option value="nl" data-i18n="dutch">Dutch</option></select></div>
       </div>
-      <label for="instruction">Direction for this reply <small>(optional)</small></label>
-      <input id="instruction" type="text" placeholder="e.g. confirm the cancellation per 1 October">
-      <button id="go" type="submit">Draft reply →</button>
-      <p class="fine">Demo limit: 10 drafts per hour. Don't paste real customer data.</p>
+      <label for="instruction" data-i18n-html="instructionLabel">Direction for this reply <small>(optional)</small></label>
+      <input id="instruction" type="text" data-i18n-placeholder="instructionPlaceholder" placeholder="e.g. confirm the cancellation per 1 October">
+      <button id="go" type="submit" data-i18n="draftButton">Draft reply →</button>
+      <p class="fine" data-i18n="limit">Demo limit: 10 drafts per hour. Don't paste real customer data.</p>
     </form>
 
     <section id="out" class="panel out" aria-live="polite">
-      <div class="panel-head"><span>02 / DRAFT</span><span id="case" class="case"></span></div>
-      <p id="empty" class="empty">The draft appears here.</p>
+      <div class="panel-head"><span data-i18n="draftHead">02 / DRAFT</span><span id="case" class="case"></span></div>
+      <p id="empty" class="empty" data-i18n="empty">The draft appears here.</p>
       <p id="error" class="error" hidden></p>
       <div id="result" hidden>
-        <label for="subject">Subject</label>
+        <label for="subject" data-i18n="subject">Subject</label>
         <input id="subject" type="text">
-        <label for="draft">Reply <small>(edit freely)</small></label>
+        <label for="draft" data-i18n-html="replyLabel">Reply <small>(edit freely)</small></label>
         <textarea id="draft" rows="14"></textarea>
-        <div class="actions"><button id="copy" type="button">Copy reply</button><span id="copied" class="fine" hidden>Copied.</span></div>
+        <div class="actions"><button id="copy" type="button" data-i18n="copy">Copy reply</button><span id="copied" class="fine" hidden data-i18n="copied">Copied.</span></div>
         <div class="lists">
-          <div><h3>Why this draft</h3><ul id="notes"></ul></div>
-          <div><h3>Check before sending</h3><ul id="checks"></ul></div>
+          <div><h3 data-i18n="why">Why this draft</h3><ul id="notes"></ul></div>
+          <div><h3 data-i18n="check">Check before sending</h3><ul id="checks"></ul></div>
         </div>
       </div>
     </section>
@@ -57,9 +60,10 @@
 </main>
 
 <footer>
-  <span>Built by <a href="https://fizzl.eu/">Frits · fizzl.eu</a> with Claude. Northwind Daily and its policies are made up for this demo.</span>
-  <a href="https://github.com/Fizzl13/replydesk">Source on GitHub ↗</a>
+  <span data-i18n-html="footer">Built by <a href="https://fizzl.eu/">Frits · fizzl.eu</a> with Claude. Northwind Daily and its policies are made up for this demo.</span>
+  <a href="https://github.com/Fizzl13/replydesk" data-i18n="source">Source on GitHub ↗</a>
 </footer>
+<script src="i18n.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

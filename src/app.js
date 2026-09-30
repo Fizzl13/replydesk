@@ -4,6 +4,9 @@ import { fileURLToPath } from "node:url";
 import { COMPANY, CASE_TYPES, SAMPLES } from "./company.js";
 import { DraftError, parseDraftRequest, MAX_MESSAGE_CHARS, MAX_INSTRUCTION_CHARS } from "./drafter.js";
 
+// The fizzl.eu homepage runs a small version of this demo against /api/draft.
+export const DEFAULT_ORIGINS = ["https://fizzl.eu", "https://www.fizzl.eu", "https://ai.fizzl.eu", "https://projects.fizzl.eu"];
+
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "public");
 
 // Every draft costs an API call, so the public demo is capped per visitor and
@@ -25,7 +28,7 @@ export function createLimiter({ perIpPerHour = 10, perDay = 300, now = () => Dat
   };
 }
 
-export function createApp({ draft, limiter = createLimiter() }) {
+export function createApp({ draft, limiter = createLimiter(), origins = DEFAULT_ORIGINS }) {
   const app = express();
   app.set("trust proxy", 1);
   app.disable("x-powered-by");
@@ -36,6 +39,22 @@ export function createApp({ draft, limiter = createLimiter() }) {
       "X-Frame-Options": "DENY",
       "Content-Security-Policy": "default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; frame-ancestors 'none'",
     });
+    next();
+  });
+
+  app.use("/api/draft", (req, res, next) => {
+    const origin = req.get("origin");
+    const allowed = Boolean(origin && origins.includes(origin));
+    if (allowed) {
+      res.set({
+        "Access-Control-Allow-Origin": origin,
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Max-Age": "600",
+        Vary: "Origin",
+      });
+    }
+    if (req.method === "OPTIONS") return res.sendStatus(allowed ? 204 : 403);
     next();
   });
 

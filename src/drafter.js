@@ -91,6 +91,7 @@ export function createDrafter({ client = new Anthropic() } = {}) {
         messages: [{ role: "user", content: userPrompt(request) }],
       });
     } catch (err) {
+      if (err instanceof Anthropic.APIError) console.error("[draft] Claude API error", err.status, err.error?.error?.type ?? "", err.message);
       if (err instanceof Anthropic.RateLimitError) throw new DraftError("The AI service is busy. Try again in a minute.", 503);
       if (err instanceof Anthropic.APIError) throw new DraftError("The AI service is not available right now.", 502);
       throw err;

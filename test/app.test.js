@@ -87,6 +87,18 @@ test("routes: config, draft, invalid input is 400 and doesn't count toward the l
   assert.match(page.headers.get("content-security-policy"), /frame-ancestors 'none'/);
 });
 
+test("cors: the fizzl.eu homepage may call /api/draft, other sites may not", async () => {
+  const base = await serve(createApp({ draft: createDrafter({ client: fakeClient(ok()) }) }));
+  const post = (origin) => fetch(`${base}/api/draft`, { method: "POST", headers: { "content-type": "application/json", origin }, body: JSON.stringify({ message: "My paper is late" }) });
+  const good = await post("https://fizzl.eu");
+  assert.equal(good.status, 200);
+  assert.equal(good.headers.get("access-control-allow-origin"), "https://fizzl.eu");
+  assert.equal((await post("https://evil.example")).headers.get("access-control-allow-origin"), null);
+  const pre = (origin) => fetch(`${base}/api/draft`, { method: "OPTIONS", headers: { origin, "access-control-request-method": "POST" } });
+  assert.equal((await pre("https://www.fizzl.eu")).status, 204);
+  assert.equal((await pre("https://evil.example")).status, 403);
+});
+
 test("no real company data: the public demo only names the fictional company", async () => {
   const fs = await import("node:fs");
   const all = ["src/company.js", "src/drafter.js", "public/index.html"].map((f) => fs.readFileSync(new URL(`../${f}`, import.meta.url), "utf8")).join("\n");

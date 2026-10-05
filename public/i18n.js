@@ -24,6 +24,9 @@ const I18N = {
     source: "Source on GitHub ↗",
     unexpected: "Unexpected answer from the server.", failed: "Something went wrong.",
     offline: "Could not reach ReplyDesk. Check your connection.",
+    triageBy: "Sorted by Jev", priority: "Priority",
+    urgentT: "urgent", angryT: "angry", humanT: "asks for a person", leaveT: "may leave", injectT: "tries to instruct the AI",
+    calmT: "calm", annoyedT: "annoyed", notUrgentT: "not urgent", soonT: "soon",
   },
   nl: {
     title: "ReplyDesk — AI-conceptantwoorden voor klantenservice",
@@ -47,6 +50,9 @@ const I18N = {
     source: "Broncode op GitHub ↗",
     unexpected: "Onverwacht antwoord van de server.", failed: "Er ging iets mis.",
     offline: "ReplyDesk is niet bereikbaar. Controleer je verbinding.",
+    triageBy: "Gesorteerd door Jev", priority: "Voorrang",
+    urgentT: "dringend", angryT: "boos", humanT: "wil een mens spreken", leaveT: "dreigt op te zeggen", injectT: "probeert de AI te sturen",
+    calmT: "rustig", annoyedT: "geïrriteerd", notUrgentT: "niet dringend", soonT: "binnenkort",
   },
 };
 

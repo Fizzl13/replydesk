@@ -23,6 +23,6 @@ ANTHROPIC_API_KEY=... npm start   # http://localhost:3000
 npm test                          # no network, no API key needed
 ```
 
-Deploy: `render.yaml` sets up a Render web service. Set `ANTHROPIC_API_KEY` in the Render dashboard.
+Deploy: `render.yaml` sets up a Render web service. Set `ANTHROPIC_API_KEY` in the Render dashboard. Optional: `TYPESAFE_API_KEY` turns on Jev triage (src/triage.js): before Claude drafts, TypeSafe's Jev sorts the message in under a second (case type, urgency, mood, asks for a person, may leave, tries to instruct the AI) and the agent sees it above the draft; a confident case type guides the draft when the agent picked none.
 
 Built by [Frits](https://fizzl.eu) with Claude.

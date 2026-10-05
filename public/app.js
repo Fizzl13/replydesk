@@ -50,6 +50,7 @@ $("form").addEventListener("submit", async (e) => {
     $("draft").value = data.draft;
     list($("notes"), data.notes);
     list($("checks"), data.check_before_sending);
+    renderTriage(data.triage);
     show("result");
   } catch {
     show("error", t("offline"));
@@ -58,6 +59,29 @@ $("form").addEventListener("submit", async (e) => {
     go.textContent = t("draftButton");
   }
 });
+
+// Jev's sorting (case type, urgency, mood, flags), shown above the draft when the server has it.
+function renderTriage(tr) {
+  const el = $("triage");
+  lastTriage = tr || null;
+  if (!tr) { el.hidden = true; el.textContent = ""; return; }
+  const level = (v, words) => (v === null ? null : words[Math.min(words.length - 1, Math.round(v))]);
+  const flags = { urgent: "urgentT", angry: "angryT", "asks for a person": "humanT", "may leave": "leaveT", "tries to instruct the AI": "injectT" };
+  const parts = [
+    tr.caseType && `${caseLabel(tr.caseType)}${tr.caseConfidence !== null ? ` ${Math.round(tr.caseConfidence * 100)}%` : ""}`,
+    !tr.reasons.includes("urgent") && level(tr.urgency, [t("notUrgentT"), t("soonT"), t("urgentT")]),
+    !tr.reasons.includes("angry") && level(tr.frustration, [t("calmT"), t("annoyedT"), t("angryT")]),
+    ...tr.reasons.map((r) => t(flags[r] ?? r)),
+  ].filter(Boolean);
+  el.replaceChildren();
+  const head = document.createElement("strong");
+  head.textContent = tr.priority ? `${t("priority")} · ` : `${t("triageBy")}: `;
+  el.append(head, document.createTextNode(parts.join(" · ")));
+  el.classList.toggle("hot", tr.priority);
+  el.hidden = false;
+}
+let lastTriage = null;
+document.addEventListener("langchange", () => renderTriage(lastTriage));
 
 $("copy").addEventListener("click", async () => {
   await navigator.clipboard.writeText(`${$("subject").value}\n\n${$("draft").value}`);

@@ -28,7 +28,7 @@ export function createLimiter({ perIpPerHour = 10, perDay = 300, now = () => Dat
   };
 }
 
-export function createApp({ draft, limiter = createLimiter(), origins = DEFAULT_ORIGINS }) {
+export function createApp({ draft, triage = null, limiter = createLimiter(), origins = DEFAULT_ORIGINS }) {
   const app = express();
   app.set("trust proxy", 1);
   app.disable("x-powered-by");
@@ -72,7 +72,11 @@ export function createApp({ draft, limiter = createLimiter(), origins = DEFAULT_
       const request = parseDraftRequest(req.body);
       const allowed = limiter(req.ip);
       if (!allowed.ok) return res.status(429).json({ error: allowed.reason });
-      res.set("Cache-Control", "no-store").json(await draft(request));
+      // Jev sorts the message first (src/triage.js); a confident case type guides the draft when none was picked.
+      const sorted = triage?.enabled ? await triage.triage(request.message) : null;
+      const hinted = !request.caseType && sorted?.caseConfidence >= 0.8 ? { ...request, caseType: sorted.caseType } : request;
+      const result = await draft(hinted);
+      res.set("Cache-Control", "no-store").json(sorted ? { ...result, triage: sorted } : result);
     } catch (err) {
       if (err instanceof DraftError) return res.status(err.status).json({ error: err.message });
       console.error("[draft]", err);
